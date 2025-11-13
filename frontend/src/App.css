@@ -1,0 +1,391 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  width: 100%;
+}
+
+/* Header */
+.header {
+  padding: 30px 0;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.logo h1 {
+  font-size: 2rem;
+  color: white;
+  font-weight: 700;
+}
+
+.tagline {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+}
+
+/* Main Content */
+.main {
+  flex: 1;
+  padding: 50px 0;
+}
+
+/* Upload Area */
+.upload-area {
+  background: white;
+  border-radius: 20px;
+  padding: 80px 40px;
+  text-align: center;
+  border: 3px dashed #d1d5db;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.upload-area:hover {
+  border-color: #6366f1;
+  background: #f9fafb;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.upload-icon {
+  color: #6366f1;
+  margin-bottom: 20px;
+}
+
+.upload-area h2 {
+  color: #1f2937;
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.upload-area p {
+  color: #6b7280;
+  margin: 10px 0;
+}
+
+.upload-hint {
+  font-size: 0.875rem;
+  color: #9ca3af;
+  margin-top: 20px;
+}
+
+/* Buttons */
+.btn {
+  padding: 12px 32px;
+  border-radius: 10px;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.btn-primary {
+  background: #6366f1;
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #4f46e5;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+}
+
+.btn-secondary {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #d1d5db;
+}
+
+.btn-success {
+  background: #10b981;
+  color: white;
+}
+
+.btn-success:hover:not(:disabled) {
+  background: #059669;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Workspace */
+.workspace {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+}
+
+/* Image Section */
+.image-section {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 40px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.image-container {
+  flex: 1;
+  min-width: 300px;
+  max-width: 400px;
+}
+
+.image-container h3 {
+  color: #1f2937;
+  margin-bottom: 15px;
+  font-size: 1.125rem;
+}
+
+.preview-image {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
+  margin-bottom: 10px;
+  max-height: 400px;
+  object-fit: contain;
+  background: #f9fafb;
+}
+
+.image-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: #6b7280;
+  padding: 10px;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.arrow {
+  color: #6366f1;
+  font-size: 2rem;
+}
+
+/* Options Panel */
+.options-panel {
+  border-top: 2px solid #f3f4f6;
+  padding-top: 30px;
+}
+
+.options-panel h3 {
+  color: #1f2937;
+  margin-bottom: 25px;
+  font-size: 1.25rem;
+}
+
+.option-group {
+  margin-bottom: 25px;
+}
+
+.option-group label {
+  display: block;
+  color: #374151;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+}
+
+.option-group input[type="number"],
+.option-group select,
+.watermark-input {
+  width: 100%;
+  padding: 10px 15px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.option-group input[type="number"]:focus,
+.option-group select:focus,
+.watermark-input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.size-inputs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.size-inputs input {
+  flex: 1;
+}
+
+.size-inputs span {
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.slider {
+  width: 100%;
+  height: 8px;
+  border-radius: 5px;
+  background: #e5e7eb;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #6366f1;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.slider::-webkit-slider-thumb:hover {
+  background: #4f46e5;
+  transform: scale(1.2);
+}
+
+.slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #6366f1;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.slider::-moz-range-thumb:hover {
+  background: #4f46e5;
+  transform: scale(1.2);
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.watermark-input {
+  margin-top: 10px;
+}
+
+/* Progress Bar */
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 20px 0;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  transition: width 0.3s ease;
+  border-radius: 10px;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  margin-top: 30px;
+  flex-wrap: wrap;
+}
+
+.action-buttons .btn {
+  flex: 1;
+  min-width: 150px;
+}
+
+/* Footer */
+.footer {
+  padding: 30px 0;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  text-align: center;
+  color: white;
+  margin-top: auto;
+}
+
+.footer p {
+  margin: 5px 0;
+}
+
+.tech-stack {
+  font-size: 0.875rem;
+  opacity: 0.8;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .logo h1 {
+    font-size: 1.5rem;
+  }
+  
+  .upload-area {
+    padding: 50px 20px;
+  }
+  
+  .workspace {
+    padding: 25px 20px;
+  }
+  
+  .image-section {
+    flex-direction: column;
+  }
+  
+  .arrow {
+    transform: rotate(90deg);
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+  }
+  
+  .action-buttons .btn {
+    width: 100%;
+  }
+}
