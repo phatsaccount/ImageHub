@@ -2,8 +2,8 @@
  * API Service - Xử lý tất cả API calls tới AWS
  */
 
-const API_GATEWAY_URL = import.meta.env.VITE_API_GATEWAY_URL
-const CLOUDFRONT_URL = import.meta.env.VITE_CLOUDFRONT_URL
+const API_GATEWAY_URL = import.meta.env.VITE_API_GATEWAY_URL || 'https://8rzkjedi72.execute-api.ap-southeast-1.amazonaws.com/v1'
+const CLOUDFRONT_URL = import.meta.env.VITE_CLOUDFRONT_URL || 'YOUR_CLOUDFRONT_URL'
 
 /**
  * Lấy presigned URL từ API Gateway
@@ -46,7 +46,7 @@ export const uploadToS3 = (uploadUrl, file, onProgress) => {
     })
 
     xhr.addEventListener('load', () => {
-      if (xhr.status === 200) {
+      if (xhr.status >= 200 && xhr.status < 300) {
         resolve()
       } else {
         reject(new Error(`Upload failed with status ${xhr.status}`))
@@ -118,4 +118,52 @@ export const validateFile = (file) => {
   }
 
   return { valid: true, error: null }
+}
+
+/**
+ * Xử lý toàn bộ luồng upload và processing
+ * @param {Object} params - Upload parameters
+ * @param {Object} callbacks - Callbacks cho progress và error
+ * @returns {Promise<string>} - URL của ảnh đã xử lý
+ */
+export const processImage = async ({
+  file,
+  width,
+  height,
+  quality,
+  format,
+  watermark
+}, {
+  onProgress,
+  onUploadKey
+}) => {
+  try {
+    // Bước 1: Lấy presigned URL
+    onProgress(5)
+    const { uploadUrl, key } = await getPresignedUrl({
+      filename: file.name,
+      contentType: file.type,
+      width: parseInt(width),
+      height: parseInt(height),
+      quality: parseInt(quality),
+      format: format,
+      watermark: watermark
+    })
+    
+    if (onUploadKey) {
+      onUploadKey(key)
+    }
+
+    // Bước 2: Upload lên S3
+    await uploadToS3(uploadUrl, file, onProgress)
+    onProgress(50)
+
+    // Bước 3: Lấy ảnh đã xử lý từ CloudFront
+    const processedImageUrl = await getProcessedImage(key, onProgress)
+    onProgress(100)
+
+    return processedImageUrl
+  } catch (error) {
+    throw error
+  }
 }
