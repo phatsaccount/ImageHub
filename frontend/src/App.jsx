@@ -1,12 +1,18 @@
 import { useState } from 'react'
 import './App.css'
 
+// Cấu hình AWS - Thay thế bằng API Gateway URL thực tế của bạn
+const API_GATEWAY_URL = import.meta.env.VITE_API_GATEWAY_URL || 'YOUR_API_GATEWAY_URL'
+const CLOUDFRONT_URL = import.meta.env.VITE_CLOUDFRONT_URL || 'YOUR_CLOUDFRONT_URL'
+
 function App() {
   const [selectedImage, setSelectedImage] = useState(null)
   const [imagePreview, setImagePreview] = useState(null)
   const [processedImage, setProcessedImage] = useState(null)
   const [isProcessing, setIsProcessing] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
+  const [error, setError] = useState(null)
+  const [uploadedKey, setUploadedKey] = useState(null)
   
   // Processing options
   const [resizeWidth, setResizeWidth] = useState(800)
@@ -19,6 +25,12 @@ function App() {
   const handleImageSelect = (e) => {
     const file = e.target.files[0]
     if (file && file.type.startsWith('image/')) {
+      // Kiểm tra kích thước file (tối đa 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        setError('Kích thước file không được vượt quá 10MB')
+        return
+      }
+      
       setSelectedImage(file)
       const reader = new FileReader()
       reader.onloadend = () => {
@@ -26,6 +38,8 @@ function App() {
       }
       reader.readAsDataURL(file)
       setProcessedImage(null)
+      setError(null)
+      setUploadedKey(null)
     }
   }
 
@@ -33,6 +47,12 @@ function App() {
     e.preventDefault()
     const file = e.dataTransfer.files[0]
     if (file && file.type.startsWith('image/')) {
+      // Kiểm tra kích thước file (tối đa 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        setError('Kích thước file không được vượt quá 10MB')
+        return
+      }
+      
       setSelectedImage(file)
       const reader = new FileReader()
       reader.onloadend = () => {
@@ -40,6 +60,8 @@ function App() {
       }
       reader.readAsDataURL(file)
       setProcessedImage(null)
+      setError(null)
+      setUploadedKey(null)
     }
   }
 
@@ -47,29 +69,147 @@ function App() {
     e.preventDefault()
   }
 
+
+
+
+  /**
+   * Bước 1: Gọi API Gateway để lấy Presigned URL từ Lambda
+   */
+  const getPresignedUrl = async () => {
+    const requestBody = {
+      filename: selectedImage.name,
+      contentType: selectedImage.type,
+      width: parseInt(resizeWidth),
+      height: parseInt(resizeHeight),
+      quality: parseInt(quality),
+      format: format,
+      watermark: addWatermark ? watermarkText : ''
+    }
+
+    const response = await fetch(API_GATEWAY_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody)
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.message || 'Không thể tạo URL upload')
+    }
+
+    return await response.json()
+  }
+
+  /**
+   * Bước 2: Upload ảnh lên S3 sử dụng Presigned URL
+   */
+  const uploadToS3 = async (uploadUrl) => {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest()
+
+      // Theo dõi tiến trình upload
+      xhr.upload.addEventListener('progress', (e) => {
+        if (e.lengthComputable) {
+          const percentComplete = Math.round((e.loaded / e.total) * 100)
+          setUploadProgress(percentComplete)
+        }
+      })
+
+      xhr.addEventListener('load', () => {
+        if (xhr.status === 200) {
+          resolve()
+        } else {
+          reject(new Error(`Upload failed with status ${xhr.status}`))
+        }
+      })
+
+      xhr.addEventListener('error', () => {
+        reject(new Error('Upload failed'))
+      })
+
+      xhr.open('PUT', uploadUrl)
+      xhr.setRequestHeader('Content-Type', selectedImage.type)
+      xhr.send(selectedImage)
+    })
+  }
+
+  /**
+   * Bước 3: Đợi Lambda xử lý xong và lấy ảnh từ CloudFront
+   */
+  const getProcessedImage = async (s3Key) => {
+    // Tạo tên file ảnh đã xử lý từ key upload
+    // Lambda sẽ xử lý và lưu vào processed-images bucket
+    const processedKey = s3Key.replace('uploads/', 'processed/')
+    const cloudFrontUrl = `${CLOUDFRONT_URL}/${processedKey}`
+
+    // Thử lấy ảnh với retry (vì Lambda cần thời gian xử lý)
+    const maxRetries = 20
+    const retryDelay = 1000 // 1 giây
+
+    for (let i = 0; i < maxRetries; i++) {
+      try {
+        const response = await fetch(cloudFrontUrl, { method: 'HEAD' })
+        if (response.ok) {
+          return cloudFrontUrl
+        }
+      } catch (err) {
+        // Ảnh chưa sẵn sàng, tiếp tục retry
+      }
+      
+      // Đợi trước khi thử lại
+      await new Promise(resolve => setTimeout(resolve, retryDelay))
+      
+      // Cập nhật progress bar (từ 50% -> 100%)
+      setUploadProgress(50 + Math.round((i / maxRetries) * 50))
+    }
+
+    throw new Error('Timeout: Không thể lấy ảnh đã xử lý. Vui lòng thử lại sau.')
+  }
+
+  /**
+   * Hàm chính xử lý toàn bộ luồng upload và processing
+   */
   const handleProcess = async () => {
     if (!selectedImage) return
     
     setIsProcessing(true)
     setUploadProgress(0)
+    setError(null)
     
-    // Simulate processing (replace with actual AWS Lambda call)
-    const interval = setInterval(() => {
-      setUploadProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval)
-          return 100
-        }
-        return prev + 10
-      })
-    }, 200)
-    
-    // TODO: Implement actual S3 upload and Lambda processing
-    setTimeout(() => {
-      setProcessedImage(imagePreview) // Placeholder
-      setIsProcessing(false)
+    try {
+      // Bước 1: Lấy presigned URL từ API Gateway
+      console.log('Đang lấy presigned URL...')
+      setUploadProgress(5)
+      const { uploadUrl, key } = await getPresignedUrl()
+      setUploadedKey(key)
+      
+      console.log('Presigned URL nhận được:', uploadUrl)
+      console.log('S3 Key:', key)
+      
+      // Bước 2: Upload ảnh lên S3
+      console.log('Đang upload ảnh lên S3...')
+      await uploadToS3(uploadUrl)
+      
+      console.log('Upload hoàn tất! Đang chờ Lambda xử lý...')
+      setUploadProgress(50)
+      
+      // Bước 3: Đợi Lambda xử lý và lấy ảnh từ CloudFront
+      console.log('Đang lấy ảnh đã xử lý từ CloudFront...')
+      const processedImageUrl = await getProcessedImage(key)
+      
+      setProcessedImage(processedImageUrl)
       setUploadProgress(100)
-    }, 2500)
+      console.log('Hoàn tất! URL ảnh đã xử lý:', processedImageUrl)
+      
+    } catch (err) {
+      console.error('Lỗi khi xử lý ảnh:', err)
+      setError(err.message || 'Đã xảy ra lỗi khi xử lý ảnh')
+      setUploadProgress(0)
+    } finally {
+      setIsProcessing(false)
+    }
   }
 
   const handleDownload = () => {
@@ -86,6 +226,8 @@ function App() {
     setImagePreview(null)
     setProcessedImage(null)
     setUploadProgress(0)
+    setError(null)
+    setUploadedKey(null)
   }
 
   return (
@@ -108,6 +250,19 @@ function App() {
       {/* Main Content */}
       <main className="main">
         <div className="container">
+          {/* Error Message */}
+          {error && (
+            <div className="error-message">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+                <line x1="12" y1="8" x2="12" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                <circle cx="12" cy="16" r="1" fill="currentColor"/>
+              </svg>
+              <span>{error}</span>
+              <button onClick={() => setError(null)} className="close-error">×</button>
+            </div>
+          )}
+
           {/* Upload Section */}
           {!selectedImage ? (
             <div 
