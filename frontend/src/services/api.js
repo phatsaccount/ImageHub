@@ -2,7 +2,7 @@
  * API Service - Xử lý tất cả API calls tới AWS
  */
 
-const API_GATEWAY_URL = import.meta.env.VITE_API_GATEWAY_URL || 'https://8rzkjedi72.execute-api.ap-southeast-1.amazonaws.com/v1'
+const API_GATEWAY_URL = import.meta.env.VITE_API_GATEWAY_URL || 'https://8rzkjedi72.execute-api.ap-southeast-1.amazonaws.com/v1/upload-url'
 const CLOUDFRONT_URL = import.meta.env.VITE_CLOUDFRONT_URL || 'YOUR_CLOUDFRONT_URL'
 
 /**
