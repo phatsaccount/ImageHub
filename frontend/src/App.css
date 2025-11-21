@@ -509,7 +509,7 @@
     max-width: 95vw;
 
     /* Padding vừa đủ để chứa nút X và cách ly nội dung */
-    padding: 40px 20px 20px 20px;
+    padding: 60px 30px 30px 30px;
 
     display: flex;
     flex-direction: column;
@@ -529,8 +529,9 @@
 /* --- 4. Nút đóng (X) --- */
 .close-modal-btn {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    /* Đặt nó nằm gọn trong phần padding 60px chúng ta vừa tạo */
+    top: 15px;
+    right: 15px;
 
     width: 32px;
     height: 32px;
