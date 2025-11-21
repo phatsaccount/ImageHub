@@ -509,7 +509,7 @@
     max-width: 95vw;
 
     /* Padding vừa đủ để chứa nút X và cách ly nội dung */
-    padding: 60px 30px 30px 30px !important;
+    padding: 60px 30px 20px 30px !important;
 
     display: flex;
     flex-direction: column;
@@ -517,13 +517,26 @@
 }
 
 /* --- 3. GỠ BỎ GIAO DIỆN MẶC ĐỊNH CỦA AMPLIFY (QUAN TRỌNG NHẤT) --- */
-/* Đoạn này sẽ tắt bóng đổ và viền trắng của Amplify đi */
+
 [data-amplify-authenticator] {
-    --amplify-components-authenticator-router-box-shadow: none !important;
-    --amplify-components-authenticator-router-border-width: 0 !important;
-    --amplify-components-authenticator-router-background-color: transparent !important;
-    /* Xóa padding mặc định của Amplify để nó sát vào khung của bạn */
-    --amplify-components-authenticator-router-padding: 0 !important;
+    /* Đẩy form xuống dưới để tránh nút X (như cũ) */
+    margin-top: 30px !important;
+
+    /* --- CÁC DÒNG MỚI THÊM ĐỂ SỬA LỖI TRÀN --- */
+    width: 100% !important;       /* Ép chiều rộng bằng đúng 100% khoảng trống cho phép */
+    box-sizing: border-box !important; /* Đảm bảo tính toán kích thước chuẩn */
+
+    /* Căn giữa nội dung bên trong */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Thêm đoạn này để chắc chắn thanh Tab (Router) không bị bóng đổ hay viền thừa */
+[data-amplify-router] {
+    width: 100% !important;
+    box-shadow: none !important;
+    border: none !important;
 }
 
 /* --- 4. Nút đóng (X) --- */
