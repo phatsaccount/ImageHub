@@ -509,7 +509,7 @@
     max-width: 95vw;
 
     /* Padding vừa đủ để chứa nút X và cách ly nội dung */
-    padding: 60px 30px 30px 30px;
+    padding: 60px 30px 30px 30px !important;
 
     display: flex;
     flex-direction: column;
@@ -545,7 +545,7 @@
     color: #4b5563;
     cursor: pointer;
     transition: all 0.2s ease;
-    z-index: 10;
+    z-index: 9999 !important;
 }
 
 .close-modal-btn:hover {
