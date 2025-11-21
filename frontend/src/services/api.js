@@ -1,21 +1,49 @@
 /**
  * API Service - Xử lý tất cả API calls tới AWS
  */
+import { fetchAuthSession } from 'aws-amplify/auth';
 
 const API_GATEWAY_URL = import.meta.env.VITE_API_GATEWAY_URL || 'https://8rzkjedi72.execute-api.ap-southeast-1.amazonaws.com/v1/upload-url'
 const CLOUDFRONT_URL = import.meta.env.VITE_CLOUDFRONT_URL || 'https://d14vg5o4yx9zqx.cloudfront.net'
 
 /**
+ * BƯỚC 3: Hàm phụ trợ để lấy token hiện tại
+ */
+const getAuthToken = async () => {
+  try {
+    const session = await fetchAuthSession();
+    if (session.tokens) {
+      return session.tokens.idToken.toString();
+    }
+  } catch (err) {
+    console.log("Khách vãng lai (Chưa login)");
+  }
+  return null;
+};
+
+/**
  * Lấy presigned URL từ API Gateway
- * @param {Object} params - Upload parameters
+ * @param {Object} params - Upload parameters (includes key with userId)
  * @returns {Promise<Object>} - { uploadUrl, key, expiresIn }
  */
 export const getPresignedUrl = async (params) => {
+  // 1. Lấy token (nếu có)
+  const token = await getAuthToken();
+  
+  // 2. Chuẩn bị Header
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+  
+  // Nếu có token -> Gửi kèm để Backend biết là thành viên
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  // 3. Gọi API (Method POST)
   const response = await fetch(API_GATEWAY_URL, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: headers, // <-- Dùng header mới tạo ở trên
     body: JSON.stringify(params)
   })
 
@@ -138,9 +166,22 @@ export const processImage = async ({
   onUploadKey
 }) => {
   try {
-    // Bước 1: Lấy presigned URL
+    // Lấy userId từ user hiện tại
+    const currentUser = await getCurrentUser()
+    const userId = currentUser?.userId || 'temp'
+    
+    // Tạo tên file unique với timestamp
+    const timestamp = Date.now()
+    const fileExtension = file.name.split('.').pop()
+    const generatedFileName = `${timestamp}.${fileExtension}`
+    
+    // Tạo S3 key theo định dạng: users/${userId}/${generatedFileName}
+    const s3Key = `users/${userId}/${generatedFileName}`
+    
+    // Bước 1: Lấy presigned URL với key có chứa userId
     onProgress(5)
     const { uploadUrl, key } = await getPresignedUrl({
+      key: s3Key,
       filename: file.name,
       contentType: file.type,
       width: parseInt(width),

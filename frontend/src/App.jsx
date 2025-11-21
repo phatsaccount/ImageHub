@@ -2,16 +2,10 @@ import { useState } from "react";
 import "./App.css";
 import { validateFile, processImage } from "./services/api";
 import { createImagePreview, safeParseInt } from "./utils/helpers";
+import { Authenticator } from '@aws-amplify/ui-react';
+import '@aws-amplify/ui-react/styles.css';
 
 function App() {
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
-  const [processedImage, setProcessedImage] = useState(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [error, setError] = useState(null);
-  const [uploadedKey, setUploadedKey] = useState(null);
-
   // Processing options
   const [resizeWidth, setResizeWidth] = useState(800);
   const [resizeHeight, setResizeHeight] = useState(600);
@@ -19,6 +13,15 @@ function App() {
   const [format, setFormat] = useState("jpeg");
   const [addWatermark, setAddWatermark] = useState(false);
   const [watermarkText, setWatermarkText] = useState("ImageHub");
+
+  // Image states
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [processedImage, setProcessedImage] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [error, setError] = useState(null);
+  const [uploadedKey, setUploadedKey] = useState(null);
 
   const handleImageSelect = async (e) => {
     const file = e.target.files[0];
@@ -126,27 +129,40 @@ function App() {
     setUploadedKey(null);
   };
 
+  // BƯỚC 2: Bọc toàn bộ app trong Authenticator
   return (
-    <div className="app">
-      {/* Header */}
-      <header className="header">
-        <div className="container">
-          <div className="logo">
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-              <rect width="32" height="32" rx="8" fill="#6366f1" />
-              <path
-                d="M8 12L16 8L24 12V20L16 24L8 20V12Z"
-                stroke="white"
-                strokeWidth="2"
-                strokeLinejoin="round"
-              />
-              <circle cx="16" cy="16" r="3" fill="white" />
-            </svg>
-            <h1>ImageHub</h1>
-          </div>
-          <p className="tagline">Xử lý ảnh nhanh chóng & miễn phí</p>
-        </div>
-      </header>
+    <Authenticator>
+      {({ signOut, user }) => (
+        <div className="app">
+          {/* Header */}
+          <header className="header">
+            <div className="container">
+              <div className="header-content">
+                <div className="logo">
+                  <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <rect width="32" height="32" rx="8" fill="#6366f1" />
+                    <path
+                      d="M8 12L16 8L24 12V20L16 24L8 20V12Z"
+                      stroke="white"
+                      strokeWidth="2"
+                      strokeLinejoin="round"
+                    />
+                    <circle cx="16" cy="16" r="3" fill="white" />
+                  </svg>
+                  <div>
+                    <h1>ImageHub</h1>
+                    <p className="tagline">Xử lý ảnh nhanh chóng & miễn phí</p>
+                  </div>
+                </div>
+                <div className="user-menu">
+                  <span className="user-email">Xin chào, {user?.username || user?.signInDetails?.loginId}</span>
+                  <button onClick={signOut} className="logout-btn">
+                    Đăng xuất
+                  </button>
+                </div>
+              </div>
+            </div>
+          </header>
 
       {/* Main Content */}
       <main className="main">
@@ -401,7 +417,9 @@ function App() {
           <p className="tech-stack">Powered by AWS Lambda, S3 & CloudFront</p>
         </div>
       </footer>
-    </div>
+        </div>
+      )}
+    </Authenticator>
   );
 }
 
