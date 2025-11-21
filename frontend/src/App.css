@@ -483,7 +483,7 @@
   }
 }
 
-/* --- 1. Lớp nền mờ (Giữ nguyên) --- */
+/* --- 1. Lớp nền mờ (Căn giữa màn hình) --- */
 .auth-modal-overlay {
     position: fixed;
     top: 0; left: 0; width: 100vw; height: 100vh;
@@ -495,47 +495,49 @@
     backdrop-filter: blur(4px);
 }
 
-/* --- 2. Khung cửa sổ (Giữ nguyên) --- */
+/* --- 2. Khung cửa sổ (CỦA BẠN) --- */
 .auth-modal-content {
     background-color: white;
     border-radius: 16px;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
     position: relative;
 
+    /* Tự co giãn, nhưng giới hạn độ rộng */
     width: auto;
     min-width: 380px;
     max-width: 95vw;
 
+    /* Padding: Top 60px để tránh nút X, các bên 20px */
     padding: 60px 20px 30px 20px !important;
 
+    /* Căn giữa các phần tử con */
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-/* --- 3. ÉP FORM AMPLIFY VÀO KHUÔN (SỬA LẠI ĐOẠN NÀY) --- */
+/* --- 3. ÉP FORM AMPLIFY VÀO KHUÔN (QUAN TRỌNG NHẤT) --- */
 [data-amplify-authenticator] {
-    /* Reset giao diện mặc định */
+    /* Xóa giao diện mặc định */
     --amplify-components-authenticator-router-box-shadow: none !important;
     --amplify-components-authenticator-router-border-width: 0 !important;
     --amplify-components-authenticator-router-background-color: transparent !important;
     --amplify-components-authenticator-router-padding: 0 !important;
 
-    width: 100% !important;
-    min-width: 0 !important;
+    /* --- CÁC DÒNG MỚI THÊM ĐỂ SỬA LỖI TRÀN/LỆCH --- */
+    width: 100% !important;       /* Bắt buộc rộng bằng 100% khung cha */
+    min-width: 0 !important;      /* Cho phép co nhỏ lại nếu cần */
     box-sizing: border-box !important;
     margin: 0 !important;
 
-    /* --- SỬA LỖI TẠI ĐÂY --- */
+    /* Căn giữa nội dung form */
     display: flex !important;
     justify-content: center !important;
     flex-direction: column !important;
-
-    /* QUAN TRỌNG: Đổi center thành stretch để thanh ngang tự giãn ra 100% */
-    align-items: stretch !important;
+    align-items: center !important;
 }
 
-/* --- 4. XỬ LÝ PHẦN TAB/ROUTER (Giữ nguyên) --- */
+/* --- 4. XỬ LÝ PHẦN TAB/ROUTER (Sửa lỗi thanh ngang bị tràn) --- */
 [data-amplify-router] {
     width: 100% !important;
     box-shadow: none !important;
@@ -543,29 +545,29 @@
     margin: 0 !important;
 }
 
-/* --- 5. BỔ SUNG: Ép thanh Tab đẹp (Giải quyết vấn đề của bạn) --- */
-.amplify-tabs {
-    width: 100% !important;
-    margin: 0 0 20px 0 !important; /* Tạo khoảng cách với ô nhập liệu */
-    border: none !important;
-    display: flex !important;
-}
-
-.amplify-tabs__item {
-    flex: 1 !important; /* Chia đều 2 nút 50-50 */
-    text-align: center !important;
-}
-
-/* --- 6. Nút đóng (X) (Giữ nguyên) --- */
+/* --- 5. Nút đóng (X) --- */
 .close-modal-btn {
     position: absolute;
     top: 15px;
     right: 15px;
-    width: 32px; height: 32px;
-    border-radius: 50%; background-color: #f3f4f6; border: none;
+
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #f3f4f6;
+    border: none;
+
     display: flex; align-items: center; justify-content: center;
-    font-size: 18px; color: #4b5563; cursor: pointer;
+
+    font-size: 18px;
+    color: #4b5563;
+    cursor: pointer;
     transition: all 0.2s ease;
-    z-index: 10000 !important;
+    z-index: 10000 !important; /* Đảm bảo luôn nổi trên cùng */
 }
-.close-modal-btn:hover { background-color: #ff4d4f; color: white; }
+
+.close-modal-btn:hover {
+    background-color: #ff4d4f;
+    color: white;
+}
+
