@@ -485,60 +485,72 @@
 
 /* --- FIX UI POPUP LOGIN --- */
 
-/* Lớp phủ mờ nền */
+/* --- 1. Lớp nền (Chịu trách nhiệm căn giữa) --- */
 .auth-modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.5); /* Màu đen mờ */
-    z-index: 9999; /* Luôn nằm trên cùng */
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 9999;
+
+    /* QUAN TRỌNG: 3 dòng này giúp cửa sổ luôn nằm giữa màn hình */
     display: flex;
     justify-content: center;
     align-items: center;
-    backdrop-filter: blur(4px); /* Làm mờ nền web */
+
+    backdrop-filter: blur(4px);
 }
 
-/* Khung chứa Form đăng nhập */
+/* --- 2. Khung cửa sổ (Đã sửa lỗi kích thước & nút X) --- */
 .auth-modal-content {
     background-color: white;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    border-radius: 16px; /* Bo tròn mềm mại hơn */
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
     position: relative;
 
-    /* --- CÁC THÔNG SỐ QUAN TRỌNG --- */
-    width: 400px;           /* 1. Cố định chiều rộng (Không co giãn) */
-    height: auto;           /* 2. Chiều cao tự ôm sát nội dung (Để không bị thừa khoảng trắng) */
-    padding: 30px;          /* 3. Căn lề trong */
+    /* Kích thước cố định */
+    width: 520px;
+    max-width: 90vw; /* Để không bị tràn trên điện thoại */
+    height: auto;
 
-    box-sizing: border-box; /* 4. Chặn thanh cuộn ngang */
-    overflow: hidden;       /* 5. CẮT BỎ mọi thanh cuộn (Dọc & Ngang) */
+    /* FIX LỖI NÚT X: Tăng padding phía trên lên 50px để nút X có chỗ đứng riêng */
+    padding: 50px 40px 40px 40px;
 
-    /* Căn giữa màn hình (kết hợp với overlay) */
+    box-sizing: border-box;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
 }
 
-/* Nút đóng (X) */
+/* --- 3. Nút đóng (X) - Đặt vào góc phải --- */
 .close-modal-btn {
     position: absolute;
-    top: 10px;
-    right: 15px;
+    /* Đặt nút lên cao hẳn, cách biệt với nội dung */
+    top: 15px;
+    right: 20px;
+
     border: none;
-    background: transparent;
-    font-size: 1.8rem;
+    background: #f3f4f6; /* Thêm màu nền nhẹ cho nút dễ nhìn */
+    width: 32px;
+    height: 32px;
+    border-radius: 50%; /* Hình tròn */
+
+    font-size: 1.5rem;
+    line-height: 1;
     cursor: pointer;
     color: #666;
-    z-index: 10;
+
+    /* Căn chữ x vào giữa hình tròn */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
 }
 
 .close-modal-btn:hover {
+    background-color: #e5e7eb;
     color: #000;
-}
-
-/* Tùy chỉnh lại Form của Amplify cho đẹp hơn */
-[data-amplify-authenticator] {
-    --amplify-components-authenticator-router-box-shadow: none; /* Bỏ bóng mặc định */
-    --amplify-components-button-primary-background-color: #008080; /* Màu xanh chủ đạo */
+    transform: scale(1.1); /* Hiệu ứng phóng to nhẹ khi di chuột */
 }
