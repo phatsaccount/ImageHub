@@ -503,15 +503,21 @@
 /* Khung chứa Form đăng nhập */
 .auth-modal-content {
     background-color: white;
-    padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     position: relative;
-    width: 100%;
-    max-width: 420px; /* Giới hạn chiều rộng */
-    margin: 0 20px;
-    max-height: 90vh; /* Tránh bị tràn màn hình dọc */
-    overflow-y: auto; /* Cho phép cuộn nếu form quá dài */
+
+    /* --- CÁC THÔNG SỐ QUAN TRỌNG --- */
+    width: 400px;           /* 1. Cố định chiều rộng (Không co giãn) */
+    height: auto;           /* 2. Chiều cao tự ôm sát nội dung (Để không bị thừa khoảng trắng) */
+    padding: 30px;          /* 3. Căn lề trong */
+
+    box-sizing: border-box; /* 4. Chặn thanh cuộn ngang */
+    overflow: hidden;       /* 5. CẮT BỎ mọi thanh cuộn (Dọc & Ngang) */
+
+    /* Căn giữa màn hình (kết hợp với overlay) */
+    display: flex;
+    flex-direction: column;
 }
 
 /* Nút đóng (X) */

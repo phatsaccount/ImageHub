@@ -160,7 +160,6 @@ function App() {
                         </button>
 
                         {/* ĐÂY LÀ THẺ AUTHENTICATOR DUY NHẤT - NÓ NẰM TRONG POPUP */}
-                        <h2 style={{textAlign: 'center', marginBottom: '1rem', color: '#4f46e5'}}>Đăng nhập</h2>
                         <Authenticator hideSignUp={false} />
                     </div>
                 </div>
