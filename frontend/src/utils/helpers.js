@@ -107,14 +107,3 @@ export const validateQuality = (quality) => {
   
   return { valid: true, error: null }
 }
-
-/**
- * Parse integer safely
- * @param {string|number} value - Value to parse
- * @param {number} defaultValue - Default value if parse fails
- * @returns {number}
- */
-export const safeParseInt = (value, defaultValue = 0) => {
-  const parsed = parseInt(value, 10)
-  return isNaN(parsed) ? defaultValue : parsed
-}
