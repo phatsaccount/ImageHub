@@ -8,7 +8,7 @@ import { Amplify } from 'aws-amplify'
 Amplify.configure({
   Auth: {
     Cognito: {
-      userPoolId: 'ap-southeast-1_85cLsjXEy', // ID từ Backend
+      userPoolId: 'ap-southeast-1_85cLSjXEy', // ID từ Backend
       userPoolClientId: '5re0qege6no62piq816hb49npp', // ID từ Backend
       loginWith: { email: true }
     }
