@@ -482,3 +482,57 @@
     width: 100%;
   }
 }
+
+/* --- FIX UI POPUP LOGIN --- */
+
+/* Lớp phủ mờ nền */
+.auth-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5); /* Màu đen mờ */
+    z-index: 9999; /* Luôn nằm trên cùng */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(4px); /* Làm mờ nền web */
+}
+
+/* Khung chứa Form đăng nhập */
+.auth-modal-content {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    position: relative;
+    width: 100%;
+    max-width: 420px; /* Giới hạn chiều rộng */
+    margin: 0 20px;
+    max-height: 90vh; /* Tránh bị tràn màn hình dọc */
+    overflow-y: auto; /* Cho phép cuộn nếu form quá dài */
+}
+
+/* Nút đóng (X) */
+.close-modal-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    border: none;
+    background: transparent;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: #666;
+    z-index: 10;
+}
+
+.close-modal-btn:hover {
+    color: #000;
+}
+
+/* Tùy chỉnh lại Form của Amplify cho đẹp hơn */
+[data-amplify-authenticator] {
+    --amplify-components-authenticator-router-box-shadow: none; /* Bỏ bóng mặc định */
+    --amplify-components-button-primary-background-color: #008080; /* Màu xanh chủ đạo */
+}

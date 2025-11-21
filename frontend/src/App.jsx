@@ -149,6 +149,7 @@ function App() {
                         {/* Nút đóng popup */}
                         <button
                             onClick={() => setShowLogin(false)}
+                            className="close-modal-btn"
                             style={{
                                 position: 'absolute', top: '10px', right: '15px',
                                 border: 'none', background: 'transparent',
