@@ -7,7 +7,7 @@ import { getCurrentUser } from './auth.js';
 const API_GATEWAY_URL = import.meta.env.VITE_API_GATEWAY_URL || 'https://8rzkjedi72.execute-api.ap-southeast-1.amazonaws.com/v1/upload-url'
 const CLOUDFRONT_URL = import.meta.env.VITE_CLOUDFRONT_URL || 'https://d14vg5o4yx9zqx.cloudfront.net'
 const SAVE_HISTORY_URL = import.meta.env.VITE_SAVE_HISTORY_URL
-const GET_HISTORY_URL = import.meta.env.VITE_GET_HISTORY_URL
+const GET_HISTORY_URL = import.meta.env.VITE_GET_HISTORY_URL || 'https://8rzkjedi72.execute-api.ap-southeast-1.amazonaws.com/v1/history'
 
 /**
  * BƯỚC 3: Hàm phụ trợ để lấy token hiện tại
