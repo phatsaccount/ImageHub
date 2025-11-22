@@ -113,7 +113,10 @@ function App() {
 
             // Lưu lịch sử nếu user đã đăng nhập
             if (user && uploadedKey) {
-                const userId = user.username || user.userId;
+                // Import getCurrentUser từ auth.js
+                const { getCurrentUser: getUser } = await import('./services/auth.js');
+                const currentUser = await getUser();
+                const userId = currentUser?.userId || 'temp';
                 console.log('Saving history for user:', userId);
                 await saveImageHistory({
                     userId: userId,
@@ -184,7 +187,6 @@ function App() {
             {/* POPUP LỊCH SỬ ẢNH */}
             {showHistory && user && (
                 <ImageHistory 
-                    userId={user.username || user.userId} 
                     onClose={() => setShowHistory(false)} 
                 />
             )}

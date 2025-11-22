@@ -1,24 +1,30 @@
 import { useState, useEffect } from 'react';
 import { getImageHistory } from '../services/api';
+import { getCurrentUser } from '../services/auth';
 import './ImageHistory.css';
 
-function ImageHistory({ userId, onClose }) {
+function ImageHistory({ onClose }) {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [userId, setUserId] = useState(null);
 
   useEffect(() => {
-    if (userId) {
-      loadHistory();
-    }
-  }, [userId]);
+    loadHistory();
+  }, []);
 
   const loadHistory = async () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await getImageHistory(userId, 50);
+      
+      // Lấy userId từ getCurrentUser() giống như trong processImage
+      const currentUser = await getCurrentUser();
+      const fetchedUserId = currentUser?.userId || 'temp';
+      setUserId(fetchedUserId);
+      
+      const data = await getImageHistory(fetchedUserId, 50);
       setHistory(data.items || []);
     } catch (err) {
       setError(err.message || 'Không thể tải lịch sử ảnh');
