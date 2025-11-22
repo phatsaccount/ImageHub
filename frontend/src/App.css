@@ -527,8 +527,10 @@
     /* --- CÁC DÒNG MỚI THÊM ĐỂ SỬA LỖI TRÀN/LỆCH --- */
     width: 100% !important;       /* Bắt buộc rộng bằng 100% khung cha */
     min-width: 0 !important;      /* Cho phép co nhỏ lại nếu cần */
+    max-width: 100% !important;   /* Không cho vượt quá khung cha */
     box-sizing: border-box !important;
     margin: 0 !important;
+    overflow: hidden !important;  /* Ẩn phần tràn ra ngoài */
 
     /* Căn giữa nội dung form */
     display: flex !important;
@@ -540,9 +542,41 @@
 /* --- 4. XỬ LÝ PHẦN TAB/ROUTER (Sửa lỗi thanh ngang bị tràn) --- */
 [data-amplify-router] {
     width: 100% !important;
+    max-width: 100% !important;
     box-shadow: none !important;
     border: none !important;
     margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+}
+
+/* Sửa tabs Sign In / Create Account */
+[data-amplify-router] [role="tablist"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    margin: 0 0 20px 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+}
+
+[data-amplify-router] [role="tab"] {
+    flex: 1 !important;
+    border: none !important;
+    border-bottom: 2px solid transparent !important;
+    padding: 12px 16px !important;
+    font-weight: 500 !important;
+    color: #6b7280 !important;
+    background: transparent !important;
+    cursor: pointer !important;
+    transition: all 0.2s !important;
+}
+
+[data-amplify-router] [role="tab"][aria-selected="true"] {
+    color: #0d7377 !important;
+    border-bottom-color: #0d7377 !important;
 }
 
 /* --- 5. Nút đóng (X) --- */
