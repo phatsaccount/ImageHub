@@ -120,32 +120,33 @@ function App() {
         if (!processedImage) return;
 
         try {
-            // 1. Tải dữ liệu ảnh về bộ nhớ (Blob)
-            const response = await fetch(processedImage);
+            // THỦ THUẬT: Thêm tham số ngẫu nhiên ?t=... để lừa trình duyệt đây là link mới
+            // Thêm cache: 'no-store' để cấm trình duyệt dùng cache cũ
+            const response = await fetch(`${processedImage}?t=${new Date().getTime()}`, {
+                method: 'GET',
+                headers: {
+                    // Có thể bỏ Origin nếu đã dùng SimpleCORS ở CloudFront,
+                    // nhưng giữ lại cũng không sao
+                },
+                cache: 'no-store', // <--- QUAN TRỌNG
+                mode: 'cors'       // <--- QUAN TRỌNG: Khẳng định đây là request CORS
+            });
 
-            // Kiểm tra nếu tải lỗi
             if (!response.ok) throw new Error("Network response was not ok");
 
             const blob = await response.blob();
-
-            // 2. Tạo một đường dẫn ảo (Object URL) từ Blob này
-            // Đường dẫn này coi như nằm "cùng nguồn" với trang web
             const url = window.URL.createObjectURL(blob);
-
-            // 3. Tạo thẻ a và kích hoạt click
             const link = document.createElement("a");
             link.href = url;
-            link.download = `processed_${Date.now()}.${format}`; // Đặt tên file
+            link.download = `processed_${Date.now()}.${format}`;
             document.body.appendChild(link);
             link.click();
-
-            // 4. Dọn dẹp bộ nhớ
             document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
 
         } catch (error) {
             console.error("Lỗi khi tải ảnh:", error);
-            // Nếu lỗi (ví dụ do CORS chặn), fallback về cách cũ là mở tab mới
+            // Fallback
             window.open(processedImage, '_blank');
         }
     };
