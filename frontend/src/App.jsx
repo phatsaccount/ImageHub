@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 // Import các hàm xử lý ảnh của bạn (Giữ nguyên)
-import { validateFile, processImage } from "./services/api";
+import { validateFile, processImage, saveImageHistory } from "./services/api";
 import { createImagePreview, safeParseInt } from "./utils/helpers";
 
 // --- 1. IMPORT THƯ VIỆN AMPLIFY ---
@@ -42,6 +42,7 @@ function App() {
     async function checkUser() {
         try {
             const currentUser = await getCurrentUser();
+            console.log('Current User:', currentUser); // Debug log
             setUser(currentUser);
         } catch (err) {
             setUser(null);
@@ -109,6 +110,26 @@ function App() {
                 { onProgress: setUploadProgress, onUploadKey: setUploadedKey }
             );
             setProcessedImage(processedImageUrl);
+
+            // Lưu lịch sử nếu user đã đăng nhập
+            if (user && uploadedKey) {
+                const userId = user.username || user.userId;
+                console.log('Saving history for user:', userId);
+                await saveImageHistory({
+                    userId: userId,
+                    originalKey: uploadedKey,
+                    processedKey: uploadedKey.replace('uploads/', 'processed/'),
+                    metadata: {
+                        fileName: selectedImage.name,
+                        fileSize: selectedImage.size,
+                        format: format,
+                        width: resizeWidth,
+                        height: resizeHeight,
+                        quality: quality,
+                        watermark: addWatermark ? watermarkText : null
+                    }
+                });
+            }
         } catch (err) {
             console.error("Lỗi:", err);
             setError(err.message || "Đã xảy ra lỗi");
@@ -163,7 +184,7 @@ function App() {
             {/* POPUP LỊCH SỬ ẢNH */}
             {showHistory && user && (
                 <ImageHistory 
-                    userId={user.userId} 
+                    userId={user.username || user.userId} 
                     onClose={() => setShowHistory(false)} 
                 />
             )}
