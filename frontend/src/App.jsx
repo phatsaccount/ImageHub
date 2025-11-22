@@ -116,12 +116,38 @@ function App() {
         } finally { setIsProcessing(false); }
     };
 
-    const handleDownload = () => {
+    const handleDownload = async () => {
         if (!processedImage) return;
-        const link = document.createElement("a");
-        link.href = processedImage;
-        link.download = `processed_${Date.now()}.${format}`;
-        link.click();
+
+        try {
+            // 1. Tải dữ liệu ảnh về bộ nhớ (Blob)
+            const response = await fetch(processedImage);
+
+            // Kiểm tra nếu tải lỗi
+            if (!response.ok) throw new Error("Network response was not ok");
+
+            const blob = await response.blob();
+
+            // 2. Tạo một đường dẫn ảo (Object URL) từ Blob này
+            // Đường dẫn này coi như nằm "cùng nguồn" với trang web
+            const url = window.URL.createObjectURL(blob);
+
+            // 3. Tạo thẻ a và kích hoạt click
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `processed_${Date.now()}.${format}`; // Đặt tên file
+            document.body.appendChild(link);
+            link.click();
+
+            // 4. Dọn dẹp bộ nhớ
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+
+        } catch (error) {
+            console.error("Lỗi khi tải ảnh:", error);
+            // Nếu lỗi (ví dụ do CORS chặn), fallback về cách cũ là mở tab mới
+            window.open(processedImage, '_blank');
+        }
     };
 
     const handleReset = () => {
