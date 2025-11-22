@@ -288,7 +288,7 @@ function App() {
                                 {processedImage && (
                                     <div className="image-container">
                                         <h3>Ảnh đã xử lý</h3>
-                                        <img src={processedImage} alt="Processed" className="preview-image" />
+                                        <img src={processedImage} alt="Processed" className="preview-image" crossOrigin="anonymous" />
                                     </div>
                                 )}
                             </div>
