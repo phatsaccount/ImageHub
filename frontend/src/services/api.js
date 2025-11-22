@@ -6,6 +6,8 @@ import { getCurrentUser } from './auth.js';
 
 const API_GATEWAY_URL = import.meta.env.VITE_API_GATEWAY_URL || 'https://8rzkjedi72.execute-api.ap-southeast-1.amazonaws.com/v1/upload-url'
 const CLOUDFRONT_URL = import.meta.env.VITE_CLOUDFRONT_URL || 'https://d14vg5o4yx9zqx.cloudfront.net'
+const SAVE_HISTORY_URL = import.meta.env.VITE_SAVE_HISTORY_URL
+const GET_HISTORY_URL = import.meta.env.VITE_GET_HISTORY_URL
 
 /**
  * BƯỚC 3: Hàm phụ trợ để lấy token hiện tại
@@ -209,3 +211,81 @@ export const processImage = async ({
     throw error
   }
 }
+
+/**
+ * Lưu lịch sử ảnh vào DynamoDB
+ * @param {Object} historyData - { userId, originalKey, processedKey, metadata }
+ */
+export const saveImageHistory = async (historyData) => {
+  if (!SAVE_HISTORY_URL) {
+    console.warn('SAVE_HISTORY_URL not configured');
+    return;
+  }
+
+  try {
+    const token = await getAuthToken();
+    
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    const response = await fetch(SAVE_HISTORY_URL, {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(historyData)
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to save image history');
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error saving image history:', error);
+    // Không throw error để không ảnh hưởng workflow chính
+  }
+};
+
+/**
+ * Lấy lịch sử ảnh của user
+ * @param {string} userId - User ID
+ * @param {number} limit - Số lượng ảnh (default 50)
+ */
+export const getImageHistory = async (userId, limit = 50) => {
+  if (!GET_HISTORY_URL) {
+    throw new Error('GET_HISTORY_URL not configured');
+  }
+
+  try {
+    const token = await getAuthToken();
+    
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    const url = `${GET_HISTORY_URL}?userId=${encodeURIComponent(userId)}&limit=${limit}`;
+    
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: headers
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to fetch image history');
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching image history:', error);
+    throw error;
+  }
+};

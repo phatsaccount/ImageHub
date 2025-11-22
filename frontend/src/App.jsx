@@ -7,25 +7,27 @@ import { createImagePreview, safeParseInt } from "./utils/helpers";
 // --- 1. IMPORT THƯ VIỆN AMPLIFY ---
 import { Authenticator } from '@aws-amplify/ui-react';
 import { getCurrentUser, signOut } from 'aws-amplify/auth';
-import { Hub } from 'aws-amplify/utils'; // Dùng để lắng nghe sự kiện đăng nhập
+import { Hub } from 'aws-amplify/utils';
 import '@aws-amplify/ui-react/styles.css';
+
+// Import ImageHistory component
+import ImageHistory from './components/ImageHistory';
 
 function App() {
     // --- 2. STATE QUẢN LÝ NGƯỜI DÙNG ---
     const [user, setUser] = useState(null);
-    const [showLogin, setShowLogin] = useState(false); // Biến bật/tắt popup
+    const [showLogin, setShowLogin] = useState(false);
+    const [showHistory, setShowHistory] = useState(false);
 
-    // --- 3. LOGIC TỰ ĐỘNG CẬP NHẬT TRẠNG THÁI ĐĂNG NHẬP ---
     useEffect(() => {
-        checkUser(); // Kiểm tra ngay khi vào web
+        checkUser();
 
-        // Lắng nghe sự kiện từ Amplify (Khi user đăng nhập/đăng xuất)
         const listener = Hub.listen('auth', (data) => {
             switch (data.payload.event) {
                 case 'signedIn':
                     console.log('Đăng nhập thành công!');
                     checkUser();
-                    setShowLogin(false); // Tắt popup ngay lập tức
+                    setShowLogin(false);
                     break;
                 case 'signedOut':
                     console.log('Đã đăng xuất');
@@ -34,7 +36,7 @@ function App() {
             }
         });
 
-        return () => listener(); // Dọn dẹp
+        return () => listener();
     }, []);
 
     async function checkUser() {
@@ -51,7 +53,6 @@ function App() {
         setUser(null);
     }
 
-    // --- STATE CỦA ỨNG DỤNG XỬ LÝ ẢNH (GIỮ NGUYÊN) ---
     const [resizeWidth, setResizeWidth] = useState(800);
     const [resizeHeight, setResizeHeight] = useState(600);
     const [quality, setQuality] = useState(85);
@@ -67,7 +68,6 @@ function App() {
     const [error, setError] = useState(null);
     const [uploadedKey, setUploadedKey] = useState(null);
 
-    // --- CÁC HÀM XỬ LÝ UI (GIỮ NGUYÊN) ---
     const handleImageSelect = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -160,6 +160,14 @@ function App() {
     return (
         <div className="app">
 
+            {/* POPUP LỊCH SỬ ẢNH */}
+            {showHistory && user && (
+                <ImageHistory 
+                    userId={user.userId} 
+                    onClose={() => setShowHistory(false)} 
+                />
+            )}
+
             {/* 4. POPUP ĐĂNG NHẬP (Chỉ hiện khi biến showLogin = true) */}
             {showLogin && !user && (
                 <div className="auth-modal-overlay" style={{
@@ -215,6 +223,27 @@ function App() {
                   <span className="user-email" style={{fontWeight: '500'}}>
                     {user.signInDetails?.loginId || user.username}
                   </span>
+                                    <button 
+                                        onClick={() => setShowHistory(true)}
+                                        className="history-btn"
+                                        style={{
+                                            padding: '8px 16px',
+                                            backgroundColor: '#dbeafe',
+                                            color: '#1e40af',
+                                            border: 'none',
+                                            borderRadius: '6px',
+                                            cursor: 'pointer',
+                                            fontWeight: 'bold',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '6px'
+                                        }}
+                                    >
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                            <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                        </svg>
+                                        Lịch sử
+                                    </button>
                                     <button onClick={handleSignOut} className="logout-btn" style={{
                                         padding: '8px 16px', backgroundColor: '#fee2e2', color: '#ef4444',
                                         border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold'
