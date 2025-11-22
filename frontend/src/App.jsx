@@ -142,9 +142,9 @@ function App() {
                     backdropFilter: 'blur(5px)'
                 }}>
                     <div className="auth-modal-content" style={{
-                        backgroundColor: 'white', padding: '2rem', borderRadius: '12px',
+                        backgroundColor: 'white', padding: '2.5rem', borderRadius: '12px',
                         boxShadow: '0 10px 25px rgba(0,0,0,0.2)', position: 'relative',
-                        maxWidth: '450px', width: '100%'
+                        maxWidth: '500px', width: '100%'
                     }}>
                         {/* Nút đóng popup */}
                         <button
