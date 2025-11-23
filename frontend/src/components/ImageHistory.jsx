@@ -34,7 +34,7 @@ function ImageHistory({ onClose }) {
     }
   };
 
-  const handleDownload = async (url, timestamp) => {
+  const handleDownload = async (url) => {
     try {
       const response = await fetch(url);
       const blob = await response.blob();
@@ -42,7 +42,7 @@ function ImageHistory({ onClose }) {
       
       const link = document.createElement('a');
       link.href = downloadUrl;
-      link.download = `imagehub_${timestamp.replace(/:/g, '-')}.jpg`;
+      link.download = `imagehub_${Date.now()}.jpg`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -50,32 +50,6 @@ function ImageHistory({ onClose }) {
     } catch (error) {
       console.error('Download error:', error);
       window.open(url, '_blank');
-    }
-  };
-
-  const formatDate = (timestamp) => {
-    try {
-      if (!timestamp) return null;
-      
-      // Xử lý nếu timestamp là số (Unix timestamp in milliseconds)
-      const date = typeof timestamp === 'number' 
-        ? new Date(timestamp) 
-        : new Date(timestamp);
-      
-      // Kiểm tra xem date có hợp lệ không
-      if (isNaN(date.getTime())) {
-        return null; // Trả về null để ẩn thời gian
-      }
-      
-      return date.toLocaleString('vi-VN', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    } catch {
-      return null; // Trả về null thay vì timestamp để ẩn nếu lỗi
     }
   };
 
@@ -149,14 +123,6 @@ function ImageHistory({ onClose }) {
                   </div>
                 </div>
                 <div className="history-info">
-                  {formatDate(item.timestamp) && (
-                    <div className="history-date">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                      </svg>
-                      {formatDate(item.timestamp)}
-                    </div>
-                  )}
                   {item.metadata && (
                     <div className="history-metadata">
                       {item.metadata.width && item.metadata.height && (
@@ -172,7 +138,7 @@ function ImageHistory({ onClose }) {
                   )}
                   {item.processedUrl && (
                     <button 
-                      onClick={() => handleDownload(item.processedUrl, item.timestamp)}
+                      onClick={() => handleDownload(item.processedUrl)}
                       className="download-btn-small"
                     >
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
