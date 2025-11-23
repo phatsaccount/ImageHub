@@ -102,24 +102,24 @@ function ImageHistory({ onClose }) {
             {history.map((item, index) => {
               console.log(`Item ${index}:`, {
                 processedKey: item.processedKey,
-                processedUrl: item.processedUrl,
+                cloudfrontUrl: item['cloudfront-url'],
                 metadata: item.metadata
               });
               
               return (
               <div key={`${item.userId}-${item.timestamp}-${index}`} className="history-item">
                 <div className="history-image-container" onClick={() => setSelectedImage(item)}>
-                  {item.processedUrl ? (
+                  {item['cloudfront-url'] ? (
                     <img 
-                      src={item.processedUrl} 
+                      src={item['cloudfront-url']} 
                       alt={`Processed ${item.timestamp}`}
                       loading="lazy"
                       onError={(e) => {
-                        console.error('Image load error:', item.processedUrl);
+                        console.error('Image load error:', item['cloudfront-url']);
                         e.target.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><rect fill="%23ddd"/><text x="50%" y="50%" fill="%23999" text-anchor="middle">No Image</text></svg>';
                       }}
                       onLoad={() => {
-                        console.log('Image loaded successfully:', item.processedUrl);
+                        console.log('Image loaded successfully:', item['cloudfront-url']);
                       }}
                     />
                   ) : (
@@ -149,9 +149,9 @@ function ImageHistory({ onClose }) {
                       )}
                     </div>
                   )}
-                  {item.processedUrl && (
+                  {item['cloudfront-url'] && (
                     <button 
-                      onClick={() => handleDownload(item.processedUrl)}
+                      onClick={() => handleDownload(item['cloudfront-url'])}
                       className="download-btn-small"
                     >
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -168,7 +168,7 @@ function ImageHistory({ onClose }) {
         )}
 
         {/* Modal xem ảnh phóng to */}
-        {selectedImage && selectedImage.processedUrl && (
+        {selectedImage && selectedImage['cloudfront-url'] && (
           <div className="image-preview-modal" onClick={() => setSelectedImage(null)}>
             <div className="image-preview-content" onClick={(e) => e.stopPropagation()}>
               <button 
@@ -178,10 +178,10 @@ function ImageHistory({ onClose }) {
               >
                 &times;
               </button>
-              <img src={selectedImage.processedUrl} alt="Preview" />
+              <img src={selectedImage['cloudfront-url']} alt="Preview" />
               <div className="preview-actions">
                 <button 
-                  onClick={() => handleDownload(selectedImage.processedUrl, selectedImage.timestamp)}
+                  onClick={() => handleDownload(selectedImage['cloudfront-url'], selectedImage.timestamp)}
                   className="download-btn-large"
                 >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">

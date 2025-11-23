@@ -283,17 +283,26 @@ export const getImageHistory = async (userId, limit = 50) => {
     
     const data = await response.json();
     
-    // LUÔN sử dụng CloudFront URL thay vì S3 presigned URL từ backend
+    // Xử lý URL từ backend - hỗ trợ cả cloudfront-url và processedUrl
     if (data.items) {
       data.items = data.items.map(item => {
-        // Tạo CloudFront URL từ processedKey (bỏ qua processedUrl từ backend)
-        if (item.processedKey) {
+        // Ưu tiên cloudfront-url từ backend (nếu có)
+        if (item['cloudfront-url']) {
+          item.processedUrl = item['cloudfront-url'];
+          console.log('Using cloudfront-url from backend:', item.processedUrl);
+        }
+        // Nếu không có cloudfront-url, tạo từ processedKey
+        else if (item.processedKey) {
           item.processedUrl = `${CLOUDFRONT_URL}/${item.processedKey}`;
-          console.log('Generated CloudFront URL:', item.processedUrl);
+          console.log('Generated CloudFront URL from processedKey:', item.processedUrl);
+        }
+        // Nếu có processedUrl từ backend nhưng là S3 URL, giữ nguyên
+        else if (item.processedUrl) {
+          console.log('Using processedUrl from backend:', item.processedUrl);
         }
         
-        // Tương tự cho originalUrl nếu cần
-        if (item.originalKey) {
+        // Tương tự cho originalUrl
+        if (item.originalKey && !item.originalUrl) {
           item.originalUrl = `${CLOUDFRONT_URL}/${item.originalKey}`;
         }
         

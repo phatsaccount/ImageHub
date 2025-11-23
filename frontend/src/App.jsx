@@ -152,8 +152,8 @@ function App() {
                     // Có thể bỏ Origin nếu đã dùng SimpleCORS ở CloudFront,
                     // nhưng giữ lại cũng không sao
                 },
-                cache: 'no-store', // <--- QUAN TRỌNG
-                mode: 'cors'       // <--- QUAN TRỌNG: Khẳng định đây là request CORS
+                cache: 'no-store', 
+                mode: 'cors'      
             });
 
             if (!response.ok) throw new Error("Network response was not ok");
