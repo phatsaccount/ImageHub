@@ -99,7 +99,14 @@ function ImageHistory({ onClose }) {
 
         {!loading && !error && history.length > 0 && (
           <div className="history-grid">
-            {history.map((item, index) => (
+            {history.map((item, index) => {
+              console.log(`Item ${index}:`, {
+                processedKey: item.processedKey,
+                processedUrl: item.processedUrl,
+                metadata: item.metadata
+              });
+              
+              return (
               <div key={`${item.userId}-${item.timestamp}-${index}`} className="history-item">
                 <div className="history-image-container" onClick={() => setSelectedImage(item)}>
                   {item.processedUrl ? (
@@ -108,7 +115,11 @@ function ImageHistory({ onClose }) {
                       alt={`Processed ${item.timestamp}`}
                       loading="lazy"
                       onError={(e) => {
+                        console.error('Image load error:', item.processedUrl);
                         e.target.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><rect fill="%23ddd"/><text x="50%" y="50%" fill="%23999" text-anchor="middle">No Image</text></svg>';
+                      }}
+                      onLoad={() => {
+                        console.log('Image loaded successfully:', item.processedUrl);
                       }}
                     />
                   ) : (
@@ -151,7 +162,8 @@ function ImageHistory({ onClose }) {
                   )}
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         )}
 

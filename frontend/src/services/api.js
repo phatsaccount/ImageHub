@@ -1,6 +1,4 @@
-/**
- * API Service - Xử lý tất cả API calls tới AWS
- */
+
 import { fetchAuthSession } from 'aws-amplify/auth';
 import { getCurrentUser } from './auth.js';
 
@@ -285,13 +283,20 @@ export const getImageHistory = async (userId, limit = 50) => {
     
     const data = await response.json();
     
-    // Xử lý processedUrl - nếu không có hoặc là presigned URL thì tạo từ processedKey
+    // LUÔN sử dụng CloudFront URL thay vì S3 presigned URL từ backend
     if (data.items) {
       data.items = data.items.map(item => {
-        // Nếu chưa có processedUrl hoặc processedUrl không hợp lệ, tạo từ processedKey
-        if (item.processedKey && (!item.processedUrl || item.processedUrl === null)) {
+        // Tạo CloudFront URL từ processedKey (bỏ qua processedUrl từ backend)
+        if (item.processedKey) {
           item.processedUrl = `${CLOUDFRONT_URL}/${item.processedKey}`;
+          console.log('Generated CloudFront URL:', item.processedUrl);
         }
+        
+        // Tương tự cho originalUrl nếu cần
+        if (item.originalKey) {
+          item.originalUrl = `${CLOUDFRONT_URL}/${item.originalKey}`;
+        }
+        
         return item;
       });
     }
