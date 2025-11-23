@@ -25,6 +25,8 @@ function ImageHistory({ onClose }) {
       setUserId(fetchedUserId);
       
       const data = await getImageHistory(fetchedUserId, 50);
+      console.log('History data received:', data);
+      console.log('History items:', data.items);
       setHistory(data.items || []);
     } catch (err) {
       setError(err.message || 'Không thể tải lịch sử ảnh');

@@ -283,7 +283,21 @@ export const getImageHistory = async (userId, limit = 50) => {
       throw new Error(error.error || 'Failed to fetch image history');
     }
     
-    return await response.json();
+    const data = await response.json();
+    
+    // Xử lý processedUrl - nếu không có hoặc là presigned URL thì tạo từ processedKey
+    if (data.items) {
+      data.items = data.items.map(item => {
+        // Nếu chưa có processedUrl hoặc processedUrl không hợp lệ, tạo từ processedKey
+        if (item.processedKey && (!item.processedUrl || item.processedUrl === null)) {
+          item.processedUrl = `${CLOUDFRONT_URL}/${item.processedKey}`;
+        }
+        return item;
+      });
+    }
+    
+    console.log('Processed history data:', data);
+    return data;
   } catch (error) {
     console.error('Error fetching image history:', error);
     throw error;
