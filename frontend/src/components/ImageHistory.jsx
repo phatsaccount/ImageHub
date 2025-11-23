@@ -55,7 +55,18 @@ function ImageHistory({ onClose }) {
 
   const formatDate = (timestamp) => {
     try {
-      const date = new Date(timestamp);
+      if (!timestamp) return null;
+      
+      // Xử lý nếu timestamp là số (Unix timestamp in milliseconds)
+      const date = typeof timestamp === 'number' 
+        ? new Date(timestamp) 
+        : new Date(timestamp);
+      
+      // Kiểm tra xem date có hợp lệ không
+      if (isNaN(date.getTime())) {
+        return null; // Trả về null để ẩn thời gian
+      }
+      
       return date.toLocaleString('vi-VN', {
         year: 'numeric',
         month: '2-digit',
@@ -64,7 +75,7 @@ function ImageHistory({ onClose }) {
         minute: '2-digit'
       });
     } catch {
-      return timestamp;
+      return null; // Trả về null thay vì timestamp để ẩn nếu lỗi
     }
   };
 
@@ -138,12 +149,14 @@ function ImageHistory({ onClose }) {
                   </div>
                 </div>
                 <div className="history-info">
-                  <div className="history-date">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                      <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                    </svg>
-                    {formatDate(item.timestamp)}
-                  </div>
+                  {formatDate(item.timestamp) && (
+                    <div className="history-date">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                      </svg>
+                      {formatDate(item.timestamp)}
+                    </div>
+                  )}
                   {item.metadata && (
                     <div className="history-metadata">
                       {item.metadata.width && item.metadata.height && (
