@@ -1,20 +1,20 @@
 import { useState, useEffect } from "react";
 import "./App.css";
-// Import các hàm xử lý ảnh của bạn (Giữ nguyên)
-import { validateFile, processImage, saveImageHistory } from "./services/api";
+
+import { validateFile, processImage} from "./services/api";
 import { createImagePreview, safeParseInt } from "./utils/helpers";
 
-// --- 1. IMPORT THƯ VIỆN AMPLIFY ---
+//  THƯ VIỆN AMPLIFY
 import { Authenticator } from '@aws-amplify/ui-react';
 import { getCurrentUser, signOut } from 'aws-amplify/auth';
 import { Hub } from 'aws-amplify/utils';
 import '@aws-amplify/ui-react/styles.css';
 
-// Import ImageHistory component
+// ImageHistory 
 import ImageHistory from './components/ImageHistory';
 
 function App() {
-    // --- 2. STATE QUẢN LÝ NGƯỜI DÙNG ---
+
     const [user, setUser] = useState(null);
     const [showLogin, setShowLogin] = useState(false);
     const [showHistory, setShowHistory] = useState(false);
@@ -42,7 +42,7 @@ function App() {
     async function checkUser() {
         try {
             const currentUser = await getCurrentUser();
-            console.log('Current User:', currentUser); // Debug log
+            console.log('Current User:', currentUser);
             setUser(currentUser);
         } catch (err) {
             setUser(null);
@@ -113,7 +113,7 @@ function App() {
 
             // Lưu lịch sử nếu user đã đăng nhập
             if (user && uploadedKey) {
-                // Import getCurrentUser từ auth.js
+
                 const { getCurrentUser: getUser } = await import('./services/auth.js');
                 const currentUser = await getUser();
                 const userId = currentUser?.userId || 'temp';
@@ -144,13 +144,11 @@ function App() {
         if (!processedImage) return;
 
         try {
-            // THỦ THUẬT: Thêm tham số ngẫu nhiên ?t=... để lừa trình duyệt đây là link mới
-            // Thêm cache: 'no-store' để cấm trình duyệt dùng cache cũ
+            
             const response = await fetch(`${processedImage}?t=${new Date().getTime()}`, {
                 method: 'GET',
                 headers: {
-                    // Có thể bỏ Origin nếu đã dùng SimpleCORS ở CloudFront,
-                    // nhưng giữ lại cũng không sao
+                    
                 },
                 cache: 'no-store', 
                 mode: 'cors'      
@@ -170,7 +168,7 @@ function App() {
 
         } catch (error) {
             console.error("Lỗi khi tải ảnh:", error);
-            // Fallback
+            
             window.open(processedImage, '_blank');
         }
     };
@@ -191,7 +189,7 @@ function App() {
                 />
             )}
 
-            {/* 4. POPUP ĐĂNG NHẬP (Chỉ hiện khi biến showLogin = true) */}
+            {/* 4. POPUP ĐĂNG NHẬP (*/}
             {showLogin && !user && (
                 <div className="auth-modal-overlay" style={{
                     position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
@@ -204,7 +202,6 @@ function App() {
                         boxShadow: '0 10px 25px rgba(0,0,0,0.2)', position: 'relative',
                         maxWidth: '520px', width: '100%'
                     }}>
-                        {/* Nút đóng popup */}
                         <button
                             onClick={() => setShowLogin(false)}
                             className="close-modal-btn"
@@ -217,7 +214,7 @@ function App() {
                             &times;
                         </button>
 
-                        {/* ĐÂY LÀ THẺ AUTHENTICATOR DUY NHẤT - NÓ NẰM TRONG POPUP */}
+                        {/*AUTHENTICATOR */}
                         <Authenticator hideSignUp={false} />
                     </div>
                 </div>
@@ -327,7 +324,7 @@ function App() {
                         </div>
                     ) : (
                         <div className="workspace">
-                            {/* ... (PHẦN GIAO DIỆN CHỈNH SỬA ẢNH GIỮ NGUYÊN NHƯ CŨ) ... */}
+                            {/* */}
                             <div className="image-section">
                                 <div className="image-container">
                                     <h3>Ảnh gốc</h3>

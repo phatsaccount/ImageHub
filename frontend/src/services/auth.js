@@ -1,10 +1,8 @@
-/**
- * Authentication Service - Xử lý đăng nhập, đăng xuất, quản lý session với AWS Cognito Hosted UI
- */
+
 import { signInWithRedirect, signOut, getCurrentUser as amplifyGetCurrentUser, fetchAuthSession } from 'aws-amplify/auth';
 
 /**
- * Đăng nhập người dùng với Cognito Hosted UI
+
  * Chuyển hướng người dùng đến trang đăng nhập của Cognito
  * @returns {Promise<void>}
  */
@@ -17,10 +15,7 @@ export const loginWithHostedUI = async () => {
   }
 };
 
-/**
- * Legacy login function - giữ lại để tương thích ngược nếu cần
- * Khuyến nghị sử dụng loginWithHostedUI() thay thế
- */
+
 export const login = async () => {
   return loginWithHostedUI();
 };
@@ -36,7 +31,7 @@ export const logout = async () => {
     localStorage.removeItem('authToken');
   } catch (error) {
     console.error('Logout error:', error);
-    // Vẫn xóa local storage ngay cả khi signOut lỗi
+    
     localStorage.removeItem('user');
     localStorage.removeItem('authToken');
     throw new Error(error.message || 'Đăng xuất thất bại');
@@ -107,7 +102,7 @@ export const getAuthToken = async () => {
 
 /**
  * Yêu cầu reset mật khẩu qua AWS Cognito
- * @param {string} email - Email người dùng
+ * @param {string} email 
  * @returns {Promise<void>}
  */
 export const forgotPassword = async (email) => {
@@ -129,9 +124,9 @@ export const forgotPassword = async (email) => {
 
 /**
  * Xác nhận reset mật khẩu với code từ AWS Cognito
- * @param {string} email - Email người dùng
- * @param {string} code - Mã xác nhận từ email
- * @param {string} newPassword - Mật khẩu mới
+ * @param {string} email
+ * @param {string} code 
+ * @param {string} newPassword
  * @returns {Promise<void>}
  */
 export const confirmForgotPassword = async (email, code, newPassword) => {
@@ -159,9 +154,9 @@ export const confirmForgotPassword = async (email, code, newPassword) => {
 
 /**
  * Đăng ký người dùng mới với AWS Cognito
- * @param {string} email - Email
- * @param {string} password - Mật khẩu
- * @param {string} name - Tên người dùng
+ * @param {string} email
+ * @param {string} password 
+ * @param {string} name
  * @returns {Promise<Object>}
  */
 export const register = async (email, password, name) => {

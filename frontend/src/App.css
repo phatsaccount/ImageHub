@@ -597,7 +597,7 @@
     color: #4b5563;
     cursor: pointer;
     transition: all 0.2s ease;
-    z-index: 10000 !important; /* Đảm bảo luôn nổi trên cùng */
+    z-index: 10000 !important;
 }
 
 .close-modal-btn:hover {

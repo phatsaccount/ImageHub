@@ -1,11 +1,8 @@
-/**
- * Utility functions cho ImageHub
- */
+
 
 /**
- * Format file size thành dạng dễ đọc
- * @param {number} bytes - Kích thước file theo bytes
- * @returns {string} - Formatted size (e.g., "2.5 MB")
+ * @param {number} bytes 
+ * @returns {string} 
  */
 export const formatFileSize = (bytes) => {
   if (bytes === 0) return '0 Bytes'
@@ -19,8 +16,8 @@ export const formatFileSize = (bytes) => {
 
 /**
  * Tạo preview từ file
- * @param {File} file - Image file
- * @returns {Promise<string>} - Base64 data URL
+ * @param {File} file 
+ * @returns {Promise<string>} 
  */
 export const createImagePreview = (file) => {
   return new Promise((resolve, reject) => {
@@ -40,8 +37,8 @@ export const createImagePreview = (file) => {
 
 /**
  * Download file từ URL
- * @param {string} url - URL của file
- * @param {string} filename - Tên file khi download
+ * @param {string} url
+ * @param {string} filename
  */
 export const downloadFile = (url, filename) => {
   const link = document.createElement('a')
@@ -52,8 +49,8 @@ export const downloadFile = (url, filename) => {
 
 /**
  * Debounce function
- * @param {Function} func - Function cần debounce
- * @param {number} wait - Thời gian đợi (ms)
+ * @param {Function} func
+ * @param {number} wait 
  * @returns {Function}
  */
 export const debounce = (func, wait) => {
@@ -71,10 +68,9 @@ export const debounce = (func, wait) => {
 }
 
 /**
- * Validate dimensions
- * @param {number} width - Width
- * @param {number} height - Height
- * @returns {Object} - { valid: boolean, error: string }
+ * @param {number} width
+ * @param {number} height
+ * @returns {Object}
  */
 export const validateDimensions = (width, height) => {
   const minSize = 1
@@ -96,9 +92,8 @@ export const validateDimensions = (width, height) => {
 }
 
 /**
- * Validate quality
- * @param {number} quality - Quality (1-100)
- * @returns {Object} - { valid: boolean, error: string }
+ * @param {number} quality
+ * @returns {Object} 
  */
 export const validateQuality = (quality) => {
   if (!quality || quality < 1 || quality > 100) {
@@ -109,9 +104,8 @@ export const validateQuality = (quality) => {
 }
 
 /**
- * Parse integer safely
- * @param {string|number} value - Value to parse
- * @param {number} defaultValue - Default value if parse fails
+ * @param {string|number} value 
+ * @param {number} defaultValue
  * @returns {number}
  */
 export const safeParseInt = (value, defaultValue = 0) => {

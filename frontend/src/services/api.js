@@ -7,9 +7,7 @@ const CLOUDFRONT_URL = import.meta.env.VITE_CLOUDFRONT_URL || 'https://d14vg5o4y
 const SAVE_HISTORY_URL = import.meta.env.VITE_SAVE_HISTORY_URL
 const GET_HISTORY_URL = import.meta.env.VITE_GET_HISTORY_URL || 'https://8rzkjedi72.execute-api.ap-southeast-1.amazonaws.com/v1/history'
 
-/**
- * BƯỚC 3: Hàm phụ trợ để lấy token hiện tại
- */
+
 const getAuthToken = async () => {
   try {
     const session = await fetchAuthSession();
@@ -24,19 +22,19 @@ const getAuthToken = async () => {
 
 /**
  * Lấy presigned URL từ API Gateway
- * @param {Object} params - Upload parameters (includes key with userId)
- * @returns {Promise<Object>} - { uploadUrl, key, expiresIn }
+ * @param {Object} params 
+ * @returns {Promise<Object>} 
  */
 export const getPresignedUrl = async (params) => {
-  // 1. Lấy token (nếu có)
+
   const token = await getAuthToken();
   
-  // 2. Chuẩn bị Header
+
   const headers = {
     'Content-Type': 'application/json',
   };
   
-  // Nếu có token -> Gửi kèm để Backend biết là thành viên
+
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
   }
@@ -44,7 +42,7 @@ export const getPresignedUrl = async (params) => {
   // 3. Gọi API (Method POST)
   const response = await fetch(API_GATEWAY_URL, {
     method: 'POST',
-    headers: headers, // <-- Dùng header mới tạo ở trên
+    headers: headers, 
     body: JSON.stringify(params)
   })
 
@@ -58,9 +56,9 @@ export const getPresignedUrl = async (params) => {
 
 /**
  * Upload file lên S3 sử dụng presigned URL
- * @param {string} uploadUrl - Presigned URL
- * @param {File} file - File để upload
- * @param {Function} onProgress - Callback cho progress (0-100)
+ * @param {string} uploadUrl 
+ * @param {File} file 
+ * @param {Function} onProgress 
  * @returns {Promise<void>}
  */
 export const uploadToS3 = (uploadUrl, file, onProgress) => {
@@ -94,16 +92,16 @@ export const uploadToS3 = (uploadUrl, file, onProgress) => {
 
 /**
  * Lấy ảnh đã xử lý từ CloudFront với retry logic
- * @param {string} s3Key - S3 key của ảnh upload
- * @param {Function} onProgress - Callback cho progress
- * @returns {Promise<string>} - CloudFront URL của ảnh đã xử lý
+ * @param {string} s3Key
+ * @param {Function} onProgress
+ * @returns {Promise<string>}
  */
 export const getProcessedImage = async (s3Key, onProgress) => {
   const processedKey = s3Key.replace('uploads/', 'processed/')
   const cloudFrontUrl = `${CLOUDFRONT_URL}/${processedKey}`
 
   const maxRetries = 20
-  const retryDelay = 1000 // 1 second
+  const retryDelay = 1000 
 
   for (let i = 0; i < maxRetries; i++) {
     try {
@@ -112,7 +110,7 @@ export const getProcessedImage = async (s3Key, onProgress) => {
         return cloudFrontUrl
       }
     } catch (err) {
-      // Image not ready yet
+
     }
     
     await new Promise(resolve => setTimeout(resolve, retryDelay))
@@ -127,11 +125,11 @@ export const getProcessedImage = async (s3Key, onProgress) => {
 
 /**
  * Validate file trước khi upload
- * @param {File} file - File cần validate
- * @returns {Object} - { valid: boolean, error: string }
+ * @param {File} file 
+ * @returns {Object} 
  */
 export const validateFile = (file) => {
-  const maxSize = 10 * 1024 * 1024 // 10MB
+  const maxSize = 10 * 1024 * 1024 
   const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
 
   if (!file) {
@@ -151,9 +149,9 @@ export const validateFile = (file) => {
 
 /**
  * Xử lý toàn bộ luồng upload và processing
- * @param {Object} params - Upload parameters
- * @param {Object} callbacks - Callbacks cho progress và error
- * @returns {Promise<string>} - URL của ảnh đã xử lý
+ * @param {Object} params 
+ * @param {Object} callbacks 
+ * @returns {Promise<string>}
  */
 export const processImage = async ({
   file,
@@ -244,14 +242,14 @@ export const saveImageHistory = async (historyData) => {
     return await response.json();
   } catch (error) {
     console.error('Error saving image history:', error);
-    // Không throw error để không ảnh hưởng workflow chính
+   
   }
 };
 
 /**
  * Lấy lịch sử ảnh của user
- * @param {string} userId - User ID
- * @param {number} limit - Số lượng ảnh (default 50)
+ * @param {string} userId 
+ * @param {number} limit 
  */
 export const getImageHistory = async (userId, limit = 50) => {
   if (!GET_HISTORY_URL) {
@@ -283,25 +281,24 @@ export const getImageHistory = async (userId, limit = 50) => {
     
     const data = await response.json();
     
-    // Xử lý URL từ backend - hỗ trợ cả cloudfront-url và processedUrl
+    
     if (data.items) {
       data.items = data.items.map(item => {
-        // Ưu tiên cloudfront-url từ backend (nếu có)
+        
         if (item['cloudfront-url']) {
           item.processedUrl = item['cloudfront-url'];
           console.log('Using cloudfront-url from backend:', item.processedUrl);
         }
-        // Nếu không có cloudfront-url, tạo từ processedKey
+        
         else if (item.processedKey) {
           item.processedUrl = `${CLOUDFRONT_URL}/${item.processedKey}`;
           console.log('Generated CloudFront URL from processedKey:', item.processedUrl);
         }
-        // Nếu có processedUrl từ backend nhưng là S3 URL, giữ nguyên
+       
         else if (item.processedUrl) {
           console.log('Using processedUrl from backend:', item.processedUrl);
         }
         
-        // Tương tự cho originalUrl
         if (item.originalKey && !item.originalUrl) {
           item.originalUrl = `${CLOUDFRONT_URL}/${item.originalKey}`;
         }
